@@ -8,7 +8,7 @@ sourceCompatibility = targetCompatibility = appJavaCompatibility
 ext.appMainClass = "com.shatteredpixel.shatteredpixeldungeon.desktop.DesktopLauncher"
 processResources {
     from new File(project(':core').projectDir, "/src/main/assets")
-    from new File(project(':desktop').projectDir,"/src/main/assets")
+    from new File(project(':desktop').projectDir, "/src/main/assets")
 }
 
 def osName = System.getProperty('os.name').toLowerCase(Locale.ROOT)
@@ -29,7 +29,7 @@ task debug(type: JavaExec) {
 }
 
 task release(type: Jar) {
-    //FIXME this is now needed as of gradle 7.0, due to our weird sourceSets setup. Should see if there's a better way to do this
+    // FIXME this is now needed as of gradle 7.0, due to our weird sourceSets setup. Should see if there's a better way to do this
     setDuplicatesStrategy(DuplicatesStrategy.EXCLUDE)
     from sourceSets.main.output
     dependsOn configurations.runtimeClasspath
@@ -43,7 +43,11 @@ task release(type: Jar) {
         attributes 'Implementation-Version': appVersionCode
     }
 }
-installDist.dependsOn release
+
+installDist {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
 startScripts.dependsOn release
 jpackageImage.dependsOn release
 
@@ -95,13 +99,12 @@ runtime {
                 imageOptions = ["--icon", file("./src/main/assets/icons/mac.icns"),
                                 "--java-options", "-XstartOnFirstThread",
                                 "--java-options", "-XX:+IgnoreUnrecognizedVMOptions",
-                                //append .apple because com.shatteredpixel.shatteredpixeldungeon was taken =(
+                                // append .apple because com.shatteredpixel.shatteredpixeldungeon was taken =(
                                 "--mac-package-identifier", appPackageName + ".apple",
                                 "--mac-package-name", "ShattererdPD"]
             }
         }
     }
-
 }
 
 dependencies {
@@ -113,7 +116,7 @@ dependencies {
     implementation "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
     implementation "com.badlogicgames.gdx-controllers:gdx-controllers-desktop:$gdxControllersVersion"
 
-    //we use LWJGL tinyFD directly to display crash messages
+    // we use LWJGL tinyFD directly to display crash messages
     implementation "org.lwjgl:lwjgl-tinyfd:3.3.3"
     implementation "org.lwjgl:lwjgl-tinyfd:3.3.3:natives-windows"
     implementation "org.lwjgl:lwjgl-tinyfd:3.3.3:natives-macos"
